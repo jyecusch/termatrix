@@ -1,6 +1,7 @@
 package matrix
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -97,7 +98,9 @@ func (r *RainGrid) Draw(color lipgloss.Color) string {
 
 	statusStyles := statusStyles(color)
 
-	var output string
+	var output strings.Builder
+
+	now := time.Now()
 
 	for row := range r.height {
 		isCenterRow := row == r.height/2
@@ -111,8 +114,8 @@ func (r *RainGrid) Draw(color lipgloss.Color) string {
 				timePerChar := r.introTime / time.Duration(len(r.intro)+fadeTicks)
 				fadeTime := time.Duration(timePerChar * time.Duration(charIx+fadeTicks/2))
 				fullTime := time.Duration(timePerChar * time.Duration(charIx+fadeTicks))
-				shouldFade := time.Since(r.start) > fadeTime
-				shouldSkip := time.Since(r.start) > fullTime
+				shouldFade := now.Sub(r.start) > fadeTime
+				shouldSkip := now.Sub(r.start) > fullTime
 
 				style := statusStyles[RuneStatusActive]
 				if shouldFade {
@@ -120,7 +123,7 @@ func (r *RainGrid) Draw(color lipgloss.Color) string {
 				}
 
 				if !shouldSkip {
-					output += style.Render(string(r.intro[charIx]))
+					output.WriteString(style.Render(string(r.intro[charIx])))
 					continue
 				}
 			}
@@ -133,10 +136,10 @@ func (r *RainGrid) Draw(color lipgloss.Color) string {
 				r.grid[col][row] = RandomRune()
 			}
 
-			output += statusStyles[status].Render(string(r.grid[col][row]))
+			output.WriteString(statusStyles[status].Render(string(r.grid[col][row])))
 		}
-		output += "\n"
+		output.WriteString("\n")
 	}
 
-	return lipgloss.NewStyle().Render(output)
+	return output.String()
 }
