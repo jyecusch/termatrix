@@ -60,7 +60,7 @@ func NewMatrixRain() matrixRain {
 	return matrixRain{
 		grid: matrix.NewRainGrid(100, 100),
 		// TODO: replace with a custom ticker instead of timer
-		timer:      timer.NewWithInterval(1000*time.Hour, time.Second/12),
+		timer:      timer.NewWithInterval(1000*time.Hour, time.Second/22),
 		colorIndex: 0,
 	}
 }

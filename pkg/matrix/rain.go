@@ -2,7 +2,6 @@ package matrix
 
 import (
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
@@ -29,7 +28,6 @@ type RainGrid struct {
 	width   int
 	height  int
 	columns []*RainLine
-	lock    sync.Mutex
 
 	grid [][]rune
 
@@ -56,18 +54,12 @@ func NewRainGrid(width, height int) *RainGrid {
 }
 
 func (r *RainGrid) Update() {
-	r.lock.Lock()
-	defer r.lock.Unlock()
-
 	for col := range r.columns {
 		r.columns[col].update(r.height, time.Now())
 	}
 }
 
 func (r *RainGrid) Resize(width, height int) {
-	r.lock.Lock()
-	defer r.lock.Unlock()
-
 	if width == r.width && height == r.height {
 		return
 	}
@@ -93,9 +85,6 @@ func statusStyles(color lipgloss.Color) map[RuneStatus]lipgloss.Style {
 }
 
 func (r *RainGrid) Draw(color lipgloss.Color) string {
-	r.lock.Lock()
-	defer r.lock.Unlock()
-
 	statusStyles := statusStyles(color)
 
 	var output strings.Builder
